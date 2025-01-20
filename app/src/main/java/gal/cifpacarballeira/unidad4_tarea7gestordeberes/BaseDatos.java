@@ -17,12 +17,12 @@ public class BaseDatos extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        String CREATE_TABLE= "CREATE TABLE homework (" +
-                "id integer primary key autoincrement, " +
-                "subject text, " +
-                "description text, " +
-                "duedate text, " +
-                "int isCompleted)";
+        String CREATE_TABLE = "CREATE TABLE homework (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "subject TEXT, " +
+                "description TEXT, " +
+                "duedate TEXT, " +
+                "isCompleted INTEGER)";
         sqLiteDatabase.execSQL(CREATE_TABLE);
     }
 

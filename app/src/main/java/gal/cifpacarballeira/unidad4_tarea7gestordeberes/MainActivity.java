@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private HomeworkAdapter adapter;
     private List<Homework> homeworkList;
-    private Crud crud;
+    private Crud crud = new Crud();
     private SQLiteDatabase bdRead;
     private SQLiteDatabase bdWrite;
 
@@ -40,13 +40,13 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        //Todo buscar donde colocar los read
         BaseDatos baseDatos = new BaseDatos(this);
         //Leer datos
         bdRead = baseDatos.getReadableDatabase();
         //Escribir
         bdWrite = new BaseDatos(this).getWritableDatabase();
 
+        crud.readHomework(bdRead);
         // Inicialización de componentes
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
         // ¿Por qué le paso ese segundo parámetro?
         // Porque le estoy pasando la función que quiero que se lance al hacer click en un elemento
         // Investiga sobre "operador de referencia de método en Java"
-
 
         // Configuración del RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -78,8 +77,8 @@ public class MainActivity extends AppCompatActivity {
             Bundle args = new Bundle();
             args.putParcelable("homework", homeworkToEdit);
             dialog.setArguments(args);
-            dialog.setBdWrite(bdWrite);
         }
+        dialog.setBdWrite(bdWrite);
         dialog.setOnHomeworkSavedListener(homework -> {
                     if (homeworkToEdit == null) {
                         homeworkList.add(homework);

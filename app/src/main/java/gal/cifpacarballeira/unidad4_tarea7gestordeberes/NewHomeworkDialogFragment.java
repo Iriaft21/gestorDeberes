@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -24,7 +25,7 @@ public class NewHomeworkDialogFragment extends DialogFragment {
     private Spinner subjectSpinner;
     private NewHomeworkDialogFragment.OnHomeworkSavedListener listener;
     private Homework homeworkToEdit;
-    private Crud crud;
+    private Crud crud = new Crud();
     private SQLiteDatabase bdWrite;
 
     public void setBdWrite(SQLiteDatabase bdWrite) {
@@ -73,7 +74,11 @@ public class NewHomeworkDialogFragment extends DialogFragment {
                         dueDateEditText.getText().toString(),
                         false
                 );
-                crud.createHomework(homeworkToEdit, bdWrite);
+                if (bdWrite == null) {
+                    Log.e("Fragment", "bdWrite is null");
+                    return;
+                }
+                crud.createHomework(homework, bdWrite);
 
                 if (listener != null) {
                     listener.onHomeworkSaved(homework);
