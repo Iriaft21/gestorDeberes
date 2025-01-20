@@ -19,6 +19,14 @@ public class Homework implements Parcelable {
         this.isCompleted = isCompleted;
     }
 
+    public Homework(int id, String subject, String description, String dueDate, boolean isCompleted) {
+        this.id = id;
+        this.subject = subject;
+        this.description = description;
+        this.dueDate = dueDate;
+        this.isCompleted = isCompleted;
+    }
+
     // Getters y Setters
     public int getId() {
         return id;

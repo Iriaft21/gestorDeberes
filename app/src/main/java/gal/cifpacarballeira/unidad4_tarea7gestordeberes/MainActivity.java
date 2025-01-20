@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private HomeworkAdapter adapter;
     private List<Homework> homeworkList;
+    private Crud crud;
+    private SQLiteDatabase bdRead;
+    private SQLiteDatabase bdWrite;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +40,12 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        //Todo buscar donde colocar los read
         BaseDatos baseDatos = new BaseDatos(this);
         //Leer datos
-        SQLiteDatabase bdRead = baseDatos.getReadableDatabase();
+        bdRead = baseDatos.getReadableDatabase();
         //Escribir
-        SQLiteDatabase bdWrite = new BaseDatos(this).getWritableDatabase();
+        bdWrite = new BaseDatos(this).getWritableDatabase();
 
         // Inicialización de componentes
         recyclerView = findViewById(R.id.recyclerView);
@@ -74,15 +78,17 @@ public class MainActivity extends AppCompatActivity {
             Bundle args = new Bundle();
             args.putParcelable("homework", homeworkToEdit);
             dialog.setArguments(args);
+            dialog.setBdWrite(bdWrite);
         }
         dialog.setOnHomeworkSavedListener(homework -> {
                     if (homeworkToEdit == null) {
                         homeworkList.add(homework);
                     } else {
                         homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
+                        crud.updateHomework(homeworkToEdit, bdWrite);
                     }
             adapter.notifyDataSetChanged();
-                });
+        });
         dialog.show(getSupportFragmentManager(), "AddHomeworkDialog");
 //
 //        AddHomeworkDialogFragment dialog = AddHomeworkDialogFragment.newInstance(homeworkToEdit);
@@ -137,7 +143,9 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("Confirmar eliminación")
                 .setMessage("¿Estás seguro de que deseas eliminar este deber?")
                 .setPositiveButton("Eliminar", (dialog, which) -> {
+                    //TODO aqui se elimina
                     homeworkList.remove(homework);
+                    crud.deleteHomework(homework, bdWrite);
                     adapter.notifyDataSetChanged();
                 })
                 .setNegativeButton("Cancelar", null)

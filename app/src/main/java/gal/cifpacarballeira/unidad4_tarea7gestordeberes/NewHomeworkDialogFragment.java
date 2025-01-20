@@ -2,6 +2,7 @@ package gal.cifpacarballeira.unidad4_tarea7gestordeberes;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -23,6 +24,12 @@ public class NewHomeworkDialogFragment extends DialogFragment {
     private Spinner subjectSpinner;
     private NewHomeworkDialogFragment.OnHomeworkSavedListener listener;
     private Homework homeworkToEdit;
+    private Crud crud;
+    private SQLiteDatabase bdWrite;
+
+    public void setBdWrite(SQLiteDatabase bdWrite) {
+        this.bdWrite = bdWrite;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -66,6 +73,8 @@ public class NewHomeworkDialogFragment extends DialogFragment {
                         dueDateEditText.getText().toString(),
                         false
                 );
+                crud.createHomework(homeworkToEdit, bdWrite);
+
                 if (listener != null) {
                     listener.onHomeworkSaved(homework);
                 }
