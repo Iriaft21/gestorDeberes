@@ -46,11 +46,12 @@ public class MainActivity extends AppCompatActivity {
         //Escribir
         bdWrite = new BaseDatos(this).getWritableDatabase();
 
-        crud.readHomework(bdRead);
+
         // Inicialización de componentes
         recyclerView = findViewById(R.id.recyclerView);
         FloatingActionButton fab = findViewById(R.id.fab);
         homeworkList = new ArrayList<>();
+        homeworkList = crud.readHomework(bdRead);
 
         // Crear y configurar el adaptador
         adapter = new HomeworkAdapter(homeworkList, homework -> showBottomSheet(homework));
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
+        adapter.notifyDataSetChanged();
         // Configuración del botón flotante
         fab.setOnClickListener(v -> showAddHomeworkDialog(null));
     }
@@ -84,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
                         homeworkList.add(homework);
                     } else {
                         homeworkList.set(homeworkList.indexOf(homeworkToEdit), homework);
-                        crud.updateHomework(homeworkToEdit, bdWrite);
                     }
             adapter.notifyDataSetChanged();
         });
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         view.findViewById(R.id.completeOption).setOnClickListener(v -> {
             bottomSheetDialog.dismiss();
             homework.setCompleted(true);
+            crud.updateHomework(homework, bdWrite);
             adapter.notifyDataSetChanged();
             Toast.makeText(this, "Tarea marcada como completada", Toast.LENGTH_SHORT).show();
         });
@@ -142,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("Confirmar eliminación")
                 .setMessage("¿Estás seguro de que deseas eliminar este deber?")
                 .setPositiveButton("Eliminar", (dialog, which) -> {
-                    //TODO aqui se elimina
                     homeworkList.remove(homework);
                     crud.deleteHomework(homework, bdWrite);
                     adapter.notifyDataSetChanged();

@@ -68,17 +68,23 @@ public class NewHomeworkDialogFragment extends DialogFragment {
         saveButton.setOnClickListener(v -> {
             // Validar los campos mediante un método privado de la clase
             if (validateInputs()) {
-                Homework homework = new Homework(
-                        subjectSpinner.getSelectedItem().toString(),
-                        descriptionEditText.getText().toString(),
-                        dueDateEditText.getText().toString(),
-                        false
-                );
+                Homework homework;
+                if (homeworkToEdit != null) {
+                    // Actualizar tarea existente
+                    homework = homeworkToEdit;
+                    homework.setSubject(subjectSpinner.getSelectedItem().toString());
+                    homework.setDescription(descriptionEditText.getText().toString());
+                    homework.setDueDate(dueDateEditText.getText().toString());
+                    crud.updateHomework(homework, bdWrite);
+                } else {
+                    // Crear nueva tarea
+                    homework = new Homework( subjectSpinner.getSelectedItem().toString(), descriptionEditText.getText().toString(), dueDateEditText.getText().toString(), false );
+                    crud.createHomework(homework, bdWrite);
+                }
                 if (bdWrite == null) {
                     Log.e("Fragment", "bdWrite is null");
                     return;
                 }
-                crud.createHomework(homework, bdWrite);
 
                 if (listener != null) {
                     listener.onHomeworkSaved(homework);
@@ -86,15 +92,11 @@ public class NewHomeworkDialogFragment extends DialogFragment {
                 dismiss();
             }
         });
-
         cancelButton.setOnClickListener(v -> dismiss());
-
         // Asocia el layout al diálogo
         builder.setView(view);
-
         // Crea el diálogo y lo devuelve
         return builder.create();
-
     }
 
     private int getIndex(Spinner subjectSpinner, String subject) {

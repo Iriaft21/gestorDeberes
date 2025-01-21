@@ -6,43 +6,48 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Crud {
 
     public static final String TABLE_NAME= "homework";
 
     public void createHomework(Homework homework, SQLiteDatabase bdWrite){
-        if (bdWrite == null) {
-            Log.e("Crud", "bdWrite is null");
+        if (bdWrite == null || !bdWrite.isOpen()) {
+            Log.e("Crud", "bdWrite is null or closed");
             return;
         }
-
         ContentValues contentValues = new ContentValues();
         contentValues.put("subject", homework.getSubject());
         contentValues.put("description", homework.getDescription());
         contentValues.put("isCompleted", homework.isCompleted() ? 1 : 0);
         contentValues.put("duedate", homework.getDueDate());
 
-
         bdWrite.insert("homework", null, contentValues);
-
-        bdWrite.close();
     }
 
-    public ArrayList<Homework> readHomework(SQLiteDatabase bdRead){
+    public List<Homework> readHomework(SQLiteDatabase bdRead){
+        if (bdRead == null || !bdRead.isOpen()) {
+            Log.e("Crud", "bdRead is null or closed");
+            return new ArrayList<>();
+        }
         Cursor cursor = bdRead.rawQuery("SELECT * from " + TABLE_NAME, null);
-        ArrayList<Homework> arrayList = new ArrayList<>();
+        List<Homework> homework = new ArrayList<>();
 
         if(cursor.moveToFirst()){
             do{
-                arrayList.add(new Homework(cursor.getInt(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), cursor.getInt(5)== 1? true: false));
+                homework.add(new Homework(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getInt(4) == 1));
             }while (cursor.moveToNext());
         }
         cursor.close();
-        return arrayList;
+        return homework;
     }
 
     public void updateHomework(Homework homework, SQLiteDatabase bdWrite){
+        if (bdWrite == null || !bdWrite.isOpen()) {
+            Log.e("Crud", "bdWrite is null or closed");
+            return;
+        }
         ContentValues contentValues = new ContentValues();
         contentValues.put("subject", homework.getSubject());
         contentValues.put("description", homework.getDescription());
@@ -51,15 +56,15 @@ public class Crud {
 
         String[] id = { String.valueOf(homework.getId()) };
 
-        bdWrite.update("homework", contentValues, "id =?", id);
-
-        bdWrite.close();
+        bdWrite.update("homework", contentValues, "id=?", id);
     }
 
     public void deleteHomework(Homework homework, SQLiteDatabase bdWrite){
+        if (bdWrite == null || !bdWrite.isOpen()) {
+            Log.e("Crud", "bdWrite is null or closed");
+            return;
+        }
         String[] id = { String.valueOf(homework.getId()) };
         bdWrite.delete("homework", "id=?", id);
-
-        bdWrite.close();
     }
 }
